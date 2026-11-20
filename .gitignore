@@ -1,0 +1,25 @@
+# Entorno y secretos locales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+secrets/
+
+# Dependencias y artefactos de compilación
+**/node_modules/
+**/.angular/
+**/dist/
+**/target/
+**/logs/
+**/work/
+
+# Archivos de sistema e IDEs
+.DS_Store
+Thumbs.db
+.idea/
+*.iml

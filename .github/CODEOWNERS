@@ -1,0 +1,8 @@
+# CODEOWNERS — Prácticas Supervisadas (Gestión de Clubes)
+# Agregar aquí los usuarios de GitHub de los integrantes del equipo
+
+*                   @PDR1004
+/frontend/          @PDR1004
+/backend/           @PDR1004
+/infra/             @PDR1004
+/.github/           @PDR1004
