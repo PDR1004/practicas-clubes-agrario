@@ -12,7 +12,7 @@ secrets/
 
 # Dependencias y artefactos de compilación
 **/node_modules/
-**/.angular/
+**/.vite/
 **/dist/
 **/target/
 **/logs/

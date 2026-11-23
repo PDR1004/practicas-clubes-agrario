@@ -24,7 +24,7 @@
   "clients": [
     {
       "clientId": "dacs-fe",
-      "name": "Mayorista Del Puerto Frontend (Angular)",
+      "name": "DACS Frontend (React)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,
@@ -37,12 +37,12 @@
       "baseUrl": "/dacs/",
       "redirectUris": [
         "https://clubes.local/*",
-        "http://localhost:4200/*",
+        "http://localhost:5173/*",
         "http://localhost/*"
       ],
       "webOrigins": [
         "https://clubes.local",
-        "http://localhost:4200",
+        "http://localhost:5173",
         "http://localhost",
         "+"
       ],
