@@ -1,55 +1,100 @@
-# Prácticas Supervisadas — Gestión de Clubes
+# Sistema de Gestión Integral — Club Agrario Rocamora
 
-Repositorio base con la infraestructura de contenedores (Docker Compose, Nginx con HTTPS local, Keycloak, PostgreSQL y pgAdmin) y pipeline de CI para el sistema de administración de clubes.
+Prácticas Supervisadas Profesionalizantes (200 h) · UTN FR Concepción del Uruguay
+Equipo: Juan Cruz, Agustín Ponce Perez, Ezequiel Martino, Pablo Racigh · Tutor: Adrián Tournour
+
+Plataforma multi-club para la liga: padrón de jugadores y fichajes, cuotas sociales, seguro IAPSER,
+fixture y estadísticas, y generación de documentación oficial.
+
+> **La documentación vive en [`docs/`](docs/).** Este README es solo la puerta de entrada: cómo está
+> montado el entorno y cómo levantarlo.
 
 ---
 
-## Arquitectura Base
+## Estado del proyecto
+
+| Área | Estado |
+|---|---|
+| Infraestructura (Compose, Nginx, Keycloak, PostgreSQL, pgAdmin) | ✅ operativa y verificada |
+| Esquema de base de datos | ⏳ pendiente (`KAN-38`) |
+| Backend (BFF, core, conector) | ⏳ pendiente de estructura inicial |
+| Frontend (React + Vite) | ⏳ pendiente de scaffold |
+| CI | ⚠️ definido, todavía no puede pasar: falta el código de aplicación |
+
+Hoy el repositorio contiene **solo el andamiaje**: Dockerfiles, Compose, configuración de Nginx y
+Keycloak, y la documentación. Los cuatro servicios de aplicación no construyen hasta que exista
+`frontend/package.json` y `backend/*/pom.xml`.
+
+---
+
+## Stack
+
+| Componente | Tecnología | Puerto host |
+|---|---|---|
+| Proxy inverso / TLS | Nginx 1.27 | `80`, `443` |
+| Cliente web (PWA) | React + Vite | servido en `/dacs/` |
+| BFF | Spring Boot 3 · Java 21 | `9001` |
+| API de dominio | Spring Boot 3 · Java 21 · JPA | `9003` |
+| Conector externo | Spring Boot 3 · Java 21 | `9004` → interno `9002` |
+| Identidad (IAM) | Keycloak · OAuth2 / OIDC | `8080` |
+| Base de datos | PostgreSQL 16 | `5433` |
+| Administración de BD | pgAdmin 4 | `5050` |
+
+## Arquitectura
 
 ```text
 Navegador
-   │ HTTPS (443) — https://clubes.local
+   │ HTTPS 443 — https://clubes.local
    ▼
-Nginx ─── Frontend (frontend/)
-   ├───── Keycloak (autenticación OAuth2 / OIDC)
-   └───── BFF (:9001) ───── Backend Core (:9003) ───── PostgreSQL 16
-                      └──── Conector (:9002)     ───── APIs Externas
+Nginx ──► /dacs/   Frontend React (build estático)
+   ├────► /auth/   Keycloak  (Standard Flow + PKCE S256)
+   └────► /api/    BFF :9001 ──► ms-backend :9003 ──► PostgreSQL 16 · dacs_db
+                             └─► ms-conector :9002 ──► APIs externas
 ```
 
-- **Frontend (`frontend/`):** SPA servida detrás de Nginx. Autentica usuarios con Keycloak y consume el BFF (`/api/...`).
-- **Backend (`backend/`):** Microservicios Spring Boot (Java 21) con Dockerfiles multi-stage listos para construir cada servicio.
-- **Autenticación:** Keycloak con importación automática de realm en `infra/keycloak/`.
-- **Infraestructura (`infra/`):** Nginx termina HTTPS y enruta las solicitudes; Docker Compose orquesta toda la plataforma junto con PostgreSQL 16 y pgAdmin.
+Dos bases separadas en la misma instancia: **`dacs_db`** (dominio, rol `dacs`) y **`keycloak_db`**
+(identidad, rol `keycloak`). Se crean solas en el primer arranque con
+`infra/postgres/init/01-create-keycloak-db.sh`.
 
----
-
-## Estructura del Repositorio
+## Estructura del repositorio
 
 ```text
-practicas-clubes-agrario/
-├─ frontend/                 Dockerfile y .dockerignore del cliente web
-├─ backend/                  Dockerfiles base para microservicios
-│  ├─ dacs-bff/              Backend-for-Frontend (:9001)
-│  ├─ dacs-backend/          API Core y persistencia PostgreSQL (:9003)
-│  └─ dacs-conector/         Conector hacia APIs externas (:9002)
-├─ infra/                    Orquestación Docker Compose, Nginx y Keycloak
-│  ├─ docker-compose.yml     Definición de servicios y volúmenes
-│  ├─ nginx/                 Configuración HTTPS (default.conf) y certificados locales (ssl/)
-│  ├─ keycloak/              Exportación del realm para importación automática
+.
+├─ docs/                     Documentación del proyecto (ver tabla abajo)
+├─ frontend/                 Dockerfile del cliente web (React + Vite)
+├─ backend/
+│  ├─ dacs-bff/              BFF (:9001, context path /bff)
+│  ├─ dacs-backend/          API de dominio (:9003, /backend)
+│  └─ dacs-conector/         Conector externo (:9002, /conector)
+├─ infra/
+│  ├─ docker-compose.yml     Servicios, volúmenes y red
+│  ├─ postgres/init/         Creación de keycloak_db en el primer arranque
+│  ├─ nginx/                 default.conf y certificados locales (ssl/, ignorado)
+│  ├─ keycloak/              Realm exportado para --import-realm
 │  └─ .env.example           Plantilla de variables de entorno
-├─ .github/                  Workflows de CI, plantilla de Pull Request y CODEOWNERS
-└─ README.md                 Guía de onboarding e infraestructura
+└─ .github/workflows/ci.yml  Pipeline de CI
 ```
+
+## Documentación
+
+| Documento | Para qué sirve |
+|---|---|
+| [`docs/CONTEXTO.md`](docs/CONTEXTO.md) | Alcance, roles, RF, reglas de negocio y preguntas abiertas |
+| [`docs/DOMINIO.md`](docs/DOMINIO.md) | Entidades, enumeradores y notas de implementación |
+| [`docs/DB-SCHEMA.md`](docs/DB-SCHEMA.md) | Mapa entidad→tabla, restricciones en DDL e invariantes |
+| [`docs/API-CONTRATO.md`](docs/API-CONTRATO.md) | Contrato HTTP, envelope de errores y accesos (borrador) |
+| [`docs/INFRA.md`](docs/INFRA.md) | Topología, puertos, Nginx, Keycloak y certificados |
+| [`docs/adr/`](docs/adr/README.md) | 11 decisiones de arquitectura con alternativas y consecuencias |
 
 ---
 
-## Configuración Inicial (Para Integrantes del Equipo)
+## Puesta en marcha (local)
 
-> **Importante:** Por seguridad, ni `infra/.env` ni los certificados `infra/nginx/ssl/*.pem` se suben a Git. Cada integrante debe configurarlos localmente una sola vez.
+Requisitos: **Docker Desktop** (contenedores Linux) y **OpenSSL** en el PATH.
+
+Nada de esto se versiona: `infra/.env`, `infra/nginx/ssl/*.pem` y cualquier clave quedan fuera del repo.
 
 ### 1. Variables de entorno
-
-Abrí PowerShell en la carpeta `infra`:
 
 ```powershell
 Set-Location .\infra
@@ -57,11 +102,15 @@ Copy-Item .env.example .env
 notepad .env
 ```
 
-Reemplazá las contraseñas de ejemplo en `.env` por contraseñas locales propias.
+Reemplazá las contraseñas de ejemplo. Variables: `POSTGRES_*`, `KEYCLOAK_DB*` (base y rol de
+Keycloak), `KEYCLOAK_ADMIN*` y `PGADMIN_DEFAULT_*`.
 
-### 2. Dominio local (`hosts`)
+> pgAdmin rechaza dominios de uso especial como `.local`. El Compose ya lo habilita con
+> `PGADMIN_CONFIG_ALLOW_SPECIAL_EMAIL_DOMAINS`; no cambies el email sin tocar esa línea.
 
-Agregá esta línea al archivo `C:\Windows\System32\drivers\etc\hosts` (abriendo el editor como Administrador):
+### 2. Dominio local
+
+Como administrador, en `C:\Windows\System32\drivers\etc\hosts`:
 
 ```text
 127.0.0.1 clubes.local
@@ -69,7 +118,7 @@ Agregá esta línea al archivo `C:\Windows\System32\drivers\etc\hosts` (abriendo
 
 ### 3. Certificado HTTPS local
 
-Generá `cert.pem` y `key.pem` dentro de `infra\nginx\ssl\` para `clubes.local` usando OpenSSL (incluido con Git for Windows o OpenSSL Win64):
+Desde `infra/`:
 
 ```powershell
 openssl req -x509 -newkey rsa:2048 -nodes `
@@ -77,31 +126,55 @@ openssl req -x509 -newkey rsa:2048 -nodes `
   -out .\nginx\ssl\cert.pem `
   -days 3650 `
   -subj "/C=AR/ST=ER/L=C del U/O=UTN/CN=clubes.local" `
-  -addext "subjectAltName=DNS:clubes.local"
+  -addext "subjectAltName=DNS:clubes.local,DNS:localhost,IP:127.0.0.1"
 ```
 
-*(Opcional)* Hacé doble clic en `infra\nginx\ssl\cert.pem` e instalalo en **Equipo local → Entidades de certificación raíz de confianza** para que el navegador no muestre advertencia de certificado autofirmado.
+Cada integrante genera el suyo: `cert.pem` y `key.pem` deben ser **del mismo par** y nunca se commitean.
 
-### 4. Levantar infraestructura con Docker
+Opcional para el navegador: doble clic en `infra\nginx\ssl\cert.pem` → instalar en
+**Equipo local → Entidades de certificación raíz de confianza**.
 
-Desde `infra/`:
+> **El certificado también es requisito de build.** Las imágenes Java lo importan al `cacerts` del JRE
+> con `keytool` (vía el contexto de build `certs`). Sin `cert.pem`, el build de `backend/*` falla.
+
+### 4. Levantar el entorno
 
 ```powershell
 docker compose config --quiet
-docker compose up -d --build
+docker compose up -d --build      # todo el stack (falla hasta que exista código de aplicación)
+docker compose up -d postgres pgadmin keycloak   # solo infraestructura
 docker compose ps
 ```
 
-> Mientras `frontend/` y `backend/` todavía no tengan código fuente, podés levantar solo los servicios de infraestructura base:
-> ```powershell
-> docker compose up -d postgres pgadmin keycloak
-> ```
+Para detener sin perder datos: `docker compose down`.
 
-Accesos principales:
+> **Nunca `docker compose down -v`** salvo que quieras borrar la base y el realm de Keycloak. Es irreversible.
 
-- **Aplicación Web:** <https://clubes.local/dacs/>
-- **Consola Keycloak:** <https://clubes.local/auth/admin>
-- **pgAdmin:** <http://localhost:5050>
-- **Ping del BFF:** <https://clubes.local/api/ping>
+## Accesos
 
-Para detalles adicionales de Docker Compose y Keycloak, consultá [infra/README.md](infra/README.md).
+| Qué | Dónde |
+|---|---|
+| Aplicación web | <https://clubes.local/dacs/> |
+| Consola Keycloak | <https://clubes.local/auth/admin> |
+| Realm | <https://clubes.local/auth/realms/dacs> |
+| pgAdmin | <http://localhost:5050> |
+| Ping del BFF | <https://clubes.local/api/ping> |
+| Ping al backend | <https://clubes.local/api/backendping> |
+| Ping al conector | <https://clubes.local/api/conectorping> |
+| Health del BFF | <https://clubes.local/api/metrics/health> |
+
+Usuarios de desarrollo del realm: `admin`, `user-a`, `user-b` (contraseña `1234`, definida en
+`infra/keycloak/dacs-realm.json`).
+
+## Flujo de trabajo
+
+- **Conventional Commits**, en español, sin `Co-Authored-By`.
+- **Una rama corta por tarea** (`feat/kan-37-estructura-maven`) y PR revisado. Nadie empuja directo a `main`.
+- **Archivos compartidos** (`docker-compose.yml`, `ci.yml`, `pom.xml`, `.env.example`): avisar antes de tocarlos.
+- El backlog y la trazabilidad RF → HU se gestionan en **Jira, proyecto `KAN`**.
+
+## Notas
+
+- El CI está definido pero **no puede pasar** hasta que existan `frontend/package-lock.json` y
+  `backend/*/pom.xml`: los jobs fallan en `setup-node` / `setup-java` por el caché. Está previsto en `KAN-36`.
+- El historial de decisiones y su justificación están en [`docs/adr/`](docs/adr/README.md), no en los commits.

@@ -51,8 +51,9 @@ Red interna: `nginx-docker_default`. Volumen de datos: `nginx-docker_postgres_da
 ## 4. Keycloak
 
 - **Realm:** `dacs`, importado automáticamente al primer arranque desde `infra/keycloak/dacs-realm.json`
-  (`--import-realm`). Si el realm ya existe en la base, **no se reimporta**: los cambios del JSON no pisan
-  datos existentes.
+  (`--import-realm`). El contenedor lo monta en `/opt/keycloak/data/import/dacs-realm.json`: si el realm no
+  aparece, revisá primero ese mount. Si el realm ya existe en la base, **no se reimporta**: los cambios del JSON
+  no pisan datos existentes.
 - **Cliente del frontend:** `dacs-fe`, público, Standard Flow + PKCE.
   `redirectUris` incluyen `https://clubes.local/*` y `http://localhost:5173/*` (puerto de **Vite**).
 - **Roles:** el realm exportado todavía tiene `ROLE-A` / `ROLE-B` como **placeholder**. Los 5 roles canónicos
@@ -177,6 +178,7 @@ docker compose down
 | Ping al backend | `https://clubes.local/api/backendping` |
 | Ping al conector | `https://clubes.local/api/conectorping` |
 | Actuator del BFF | `https://clubes.local/api/metrics/health` → `/bff/metrics/health` |
+| Actuator por puerto directo | `http://localhost:9001/bff/metrics/health` — separa "BFF caído" de "Nginx caído" |
 | Salud de PostgreSQL | healthcheck del Compose (`pg_isready`) |
 | Realm de Keycloak | `https://clubes.local/auth/realms/dacs` |
 
