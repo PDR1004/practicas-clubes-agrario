@@ -145,6 +145,11 @@ Estas son las aclaraciones que evitan errores de implementación. Si una decisi�
     almacenada en el servidor, pero el ERD no tiene columna ni tabla para eso (`Usuario` solo tiene `telefono`).
     **Hueco abierto:** definir si va como `usuario.whatsapp_api_key` cifrada o en una tabla `canal_whatsapp`.
     Hasta entonces, no implementar el envío automático asumiendo un almacenamiento inexistente.
+19. **El listado de beneficiarios de Comunidad Canaria (HU22) no es una entidad.** Se deriva en el momento: `cuota` del período en estado
+    `Pagada` → `fichaje_inscripcion` vigente → `jugador_tutor` vigente → `tutor`, deduplicando por `tutor.dni`.
+    No se persiste a propósito: si se guardara, quedaría desactualizado al anular un pago, vencer un tutor o
+    dar de baja a un jugador. La minimización (solo Nombre, Apellido y DNI) es una regla de la exportación,
+    no un atributo del modelo.
 
 ## 5. Trazabilidad historia de usuario → entidades
 
@@ -171,3 +176,4 @@ Estas son las aclaraciones que evitan errores de implementación. Si una decisi�
 | HU19 Lista de Buena Fe | `club`, `temporada`, `categoria`, `club_temporada_categoria`, `fichaje_inscripcion`, `jugador`, `seguro` |
 | HU20 Gestión de temporadas y categorías | `liga`, `temporada`, `categoria`, `club_temporada_categoria` |
 | HU21 Participación y renovación de planteles | `club`, `temporada`, `categoria`, `club_temporada_categoria`, `fichaje_inscripcion`, `jugador` |
+| HU22 Listado de beneficiarios | `cuota`, `fichaje_inscripcion`, `jugador`, `jugador_tutor`, `tutor`, `club` |

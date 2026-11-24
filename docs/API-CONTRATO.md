@@ -117,7 +117,8 @@ Propuesta derivada del alcance de §7. `Sí` = permitido; `—` = 403.
 | Fixture | Sí | Sí | — | Sí | — |
 | Convocatoria | Sí | Sí | — | Sí | Sí |
 | Estadísticas post-partido | Sí | Sí | — | Sí | — |
-| Exportaciones PDF / XLSX | Sí | Sí | — | Sí | — |
+| Exportaciones PDF / XLSX | Sí | Sí | - | Sí | - |
+| Listado de beneficiarios (Comunidad Canaria) | Sí | Sí | Sí | - | - |
 | Notificaciones propias | Sí | Sí | Sí | Sí | Sí |
 
 > `Sí` en SUPERADMIN es global; en el resto, **siempre acotado al propio club y a las categorías asignadas**.
@@ -180,7 +181,7 @@ Agrupados por módulo, con la HU que los origina. Los nombres son convención pr
 | `GET` | `/grupos-familiares` | Agrupaciones y becas |
 | `GET` | `/reportes/recaudacion` | Consolidado mensual por categoría e institucional |
 
-### 5.5 Partidos y documentación (HU08, HU09, HU10, HU16, HU19, RF03, RF04)
+### 5.5 Partidos y documentación (HU08, HU09, HU10, HU16, HU19, HU22, RF03, RF04)
 
 | Método | Ruta | Descripción |
 |---|---|---|
@@ -194,6 +195,7 @@ Agrupados por módulo, con la HU que los origina. Los nombres son convención pr
 | `GET` | `/exportaciones/iapser` | `.xlsx` de nómina |
 | `GET` | `/fichas/inscripcion-libre` | PDF de ficha libre |
 | `GET` | `/fichas/pase-prestamo` | PDF de ficha de pase |
+| `GET` | `/exportaciones/comunidad-canaria` | PDF/XLSX de tutores habilitados para el período; deduplicado por DNI y sin datos de menores |
 
 ### 5.6 Notificaciones y diagnóstico (HU13, RF07)
 
@@ -219,7 +221,7 @@ Notas de RF07:
 |---|---|---|
 | RF01 | HU03, HU04, HU05, HU18 | §5.3 |
 | RF02 | HU06, HU07, HU17 | §5.4 |
-| RF03 | HU08, HU11, HU12, HU19 | §5.5 (PDF/XLSX) |
+| RF03 | HU08, HU11, HU12, HU19, HU22 | §5.5 (PDF/XLSX) |
 | RF04 | HU09, HU10, HU16 | §5.5 |
 | RF05 | HU14, HU15 | §5.2 |
 | RF06 | HU01, HU02, HU20, HU21 | §5.1 |
@@ -249,3 +251,6 @@ Notas de RF07:
     endpoint: es una validación dentro de cada caso de uso de escritura.
 11. **Renovación de planteles** solo procesa fichajes `Propio`; los `A_Prestamo` y `Libre` salen en el resumen de
     exclusiones para gestión manual. Un préstamo no se renueva solo.
+12. **Listado de Comunidad Canaria**: el período `M` es un parámetro de query y la vigencia exportada es `M+1`.
+    El archivo se genera al vuelo (no se persiste), el formato PDF/XLSX está sin definir y la consulta debe
+    deduplicar por `Tutor.dni`. No incluye datos de menores, contacto ni morosidad.

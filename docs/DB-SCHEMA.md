@@ -258,6 +258,8 @@ CREATE INDEX idx_jugador_fecha_nac      ON jugador (fecha_nacimiento);
 - Validación de convocatoria (categoría y categorías inferiores) y del límite de 7 cambios.
 - Autorización multi-tenant en cada consulta (predicado por `id_club` / `id_liga`).
 - Generación de PDF y `.xlsx` (RF03), con las plantillas parametrizadas.
+- Derivación del listado de beneficiarios (HU22): cuotas del período en `Pagada` → fichaje vigente → tutores
+  vigentes, deduplicado por `tutor.dni`. No se persiste ni requiere tabla nueva; aprovecha `idx_cuota_club_periodo`.
 
 ## 6. Diagrama entidad-relación
 
@@ -313,6 +315,8 @@ la anterior.
 - **`Pase` sin estado**: si la liga exige aprobación, requiere columna y flujo nuevos.
 - **El formato exacto de IAPSER no se conoce**: el mapeo de columnas del `.xlsx` debe quedar aislado en un
   servicio dedicado para ajustarlo cuando llegue el layout oficial.
+- **El formato del listado de Comunidad Canaria está abierto**: HU22 acepta PDF o XLSX, pero no define layout
+  ni la lista de comercios adheridos. Aislar la generación para ajustarla sin tocar la consulta de datos.
 - **División deportiva**: no se persiste por decisión de diseño (`adr/0002`); si un reporte necesita agrupar por
   Infantil/Juvenil/Mayor, es una vista con la regla de la temporada, no una columna nueva.
 - **Credenciales de CallMeBot sin lugar en el modelo** 🔴: §5.4 exige una API key personal por delegado

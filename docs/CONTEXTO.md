@@ -78,13 +78,13 @@ El **alcance operativo por categoría no es un rol de Keycloak**: se resuelve en
 |---|---|---|
 | **RF01** Padrón y legajo | Datos personales, tutores, estado de fichaje, historial de altas/bajas, cobertura IAPSER y bajas lógicas. | HU03, HU04, HU05, HU18 |
 | **RF02** Financiero y cuotas | Cobros completos y acumulados, recibo con anulación auditada, descuento por grupo familiar, becas, tarifas excepcionales y métricas por categoría e institucional. | HU06, HU07, HU17 |
-| **RF03** Documentación oficial | Exportación `.xlsx` IAPSER, Lista de Buena Fe, Planilla de Partido y Fichas de Inscripción Libre / Pase a Préstamo en PDF. | HU08, HU11, HU12, HU19 |
+| **RF03** Documentación oficial | Exportación `.xlsx` IAPSER, Lista de Buena Fe, Planilla de Partido, Fichas de Inscripción Libre / Pase a Préstamo en PDF y listado mensual de beneficiarios para comercios adheridos (Comunidad Canaria). | HU08, HU11, HU12, HU19, HU22 |
 | **RF04** Fixture y estadísticas | Carga manual del fixture, convocatoria con categorías inferiores, carga post-partido (goles, tarjetas, cambios). | HU09, HU10, HU16 |
 | **RF05** Usuarios y accesos | Autenticación vía Keycloak, 5 roles canónicos, permisos por módulo y operación, historial de cargos y asignación por categoría. | HU14, HU15 |
 | **RF06** Multi-club / liga | Alta de instituciones (CUIT único), entorno aislado por club, personalización institucional, temporadas y categorías de liga, participación de clubes y renovación de planteles. | HU01, HU02, HU20, HU21 |
 | **RF07** Alertas y notificaciones | Notificación interna de cumpleaños con saludo institucional y acción "Compartir por WhatsApp", más aviso automático complementario al WhatsApp individual del Delegado vía `ms-conector`. | HU13 |
 
-El detalle completo de las 21 historias de usuario y sus criterios de aceptación está en el informe fuente.
+El detalle completo de las 22 historias de usuario y sus criterios de aceptación está en el informe fuente.
 La matriz de trazabilidad HU → entidades está reproducida en `DOMINIO.md` §5.
 
 ## 5. Requerimientos no funcionales
@@ -96,7 +96,9 @@ La matriz de trazabilidad HU → entidades está reproducida en `DOMINIO.md` §5
 - **RNF03 — Seguridad y aislamiento:** aislamiento **lógico** estricto multi-tenant. Un usuario solo accede a
   los datos de su propio club. `foto_url` y datos de menores restringidos a roles autorizados de la institución.
   El `consentimiento_imagen` se gestiona **por fichaje** y no se traslada al cambiar de club. Los datos de
-  tutores globales solo se consultan desde el club donde el menor tiene fichaje vigente.
+  tutores globales solo se consultan desde el club donde el menor tiene fichaje vigente. El listado de
+  beneficiarios para comercios adheridos expone únicamente Nombre, Apellido y DNI del tutor vigente habilitado,
+  excluyendo datos de menores, información de contacto y estado de morosidad.
 - **RNF04 — Despliegue PWA:** instalable desde el navegador; sin tiendas de aplicaciones.
 
 ## 6. Reglas de negocio
@@ -129,6 +131,7 @@ contradice, el código está mal.
 | RN-21 | El club debe habilitar sus categorías en la temporada activa antes de fichar, programar partidos o asignar cuerpo técnico. | HU21 CA1 |
 | RN-22 | El cierre **no impide cobrar**: se siguen registrando `Pago` y anulaciones sobre cuotas ya emitidas, y **no** cierra los fichajes vigentes (los cierran HU21 o HU18). | HU20 CA3 |
 | RN-23 | No se puede editar `anio_desde` / `anio_hasta` de una categoría que ya tenga participaciones en temporadas cerradas. | HU20 CA1 |
+| RN-24 | El listado de beneficiarios se deriva de las cuotas del período en estado `Pagada`, se deduplica por `Tutor.dni` y expone **solo** Nombre, Apellido y DNI del tutor vigente: sin datos de menores, contacto ni morosidad. | HU22 CA1 y CA2 |
 
 ## 7. Decisiones de diseño vigentes
 
@@ -222,5 +225,7 @@ parametrizada hasta que se respondan.
     `uq_temporada_activa_liga`.
 14. ¿CallMeBot admite el uso institucional con una API key por delegado? La adopción definitiva queda sujeta a
     una prueba piloto con varios delegados (ver `adr/0010`).
+15. ¿El listado de beneficiarios de Comunidad Canaria se entrega en **PDF o XLSX**? ¿Qué formato exacto esperan
+    los comercios adheridos y quién administra la lista de comercios? HU22 admite ambos formatos.
 
 El reglamento de la liga y los formularios oficiales deberían conseguirse y agregarse como anexo del informe.
