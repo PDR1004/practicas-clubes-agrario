@@ -13,17 +13,11 @@ fixture y estadísticas, y generación de documentación oficial.
 
 ## Estado del proyecto
 
-| Área | Estado |
-|---|---|
-| Infraestructura (Compose, Nginx, Keycloak, PostgreSQL, pgAdmin) | ✅ operativa y verificada |
-| Esquema de base de datos | ⏳ pendiente (`KAN-38`) |
-| Backend (BFF, core, conector) | ⏳ pendiente de estructura inicial |
-| Frontend (React + Vite) | ⏳ pendiente de scaffold |
-| CI | ⚠️ definido, todavía no puede pasar: falta el código de aplicación |
-
-Hoy el repositorio contiene **solo el andamiaje**: Dockerfiles, Compose, configuración de Nginx y
-Keycloak, y la documentación. Los cuatro servicios de aplicación no construyen hasta que exista
-`frontend/package.json` y `backend/*/pom.xml`.
+**Etapa de preparación técnica en curso.** El repositorio contiene hoy solo el andamiaje: Dockerfiles,
+Compose, configuración de Nginx y Keycloak, y la documentación. La infraestructura base (PostgreSQL,
+Keycloak y pgAdmin) levanta y está verificada; Nginx está configurado pero su servicio todavía no arranca,
+y los servicios de aplicación aún no tienen código. `docker compose up -d --build` falla en los cuatro
+hasta que exista `frontend/package.json` y `backend/*/pom.xml`. El avance está en el tablero de Jira (`KAN`).
 
 ---
 
