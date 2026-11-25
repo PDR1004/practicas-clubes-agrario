@@ -5,8 +5,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build -- --base=/dacs/
+RUN npm run build -- --base=/clubes/
 
 FROM nginx:1.27-alpine
 
-COPY --from=build /app/dist/ /opt/dacs/
+COPY --from=build /app/dist/ /opt/clubes/

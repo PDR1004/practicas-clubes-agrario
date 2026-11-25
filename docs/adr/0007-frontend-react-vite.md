@@ -7,7 +7,7 @@
 
 El informe describe el frontend como **React** (SPA/PWA, `React.lazy`, `Suspense`, `AuthContext`, `keycloak-js`,
 `.env.development`), pero el andamiaje del repositorio venía de otro proyecto y estaba preparado para
-**Angular**: el `Dockerfile` copiaba `dist/dacs-fe/browser/` (salida del builder de Angular), el CI usaba
+**Angular**: el `Dockerfile` copiaba `dist/clubes-fe/browser/` (salida del builder de Angular), el CI usaba
 `--configuration=production` y `.gitignore` ignoraba `**/.angular/`. Además el realm de Keycloak permitía
 `redirectUris` con `localhost:4200`, el puerto del dev server de Angular.
 
@@ -17,7 +17,7 @@ Había que alinear el andamiaje con el documento o el documento con el andamiaje
 
 **React + Vite** como stack del frontend, y se ajusta el andamiaje para que coincida:
 
-1. `frontend/Dockerfile` compila con `npm run build -- --base=/dacs/` y copia `dist/` (Vite) a `/opt/dacs/`.
+1. `frontend/Dockerfile` compila con `npm run build -- --base=/clubes/` y copia `dist/` (Vite) a `/opt/clubes/`.
 2. El CI corre `npm run build` sin flags de Angular.
 3. `.gitignore` y `.dockerignore` ignoran `.vite`, no `.angular`.
 4. El realm usa `http://localhost:5173/*` (puerto de Vite) en `redirectUris` y `webOrigins`.
@@ -39,7 +39,7 @@ Positivas:
 
 Negativas:
 
-- El `Dockerfile` depende del contrato de salida de Vite (`dist/`) y de que el `base` sea `/dacs/`; si se cambia
+- El `Dockerfile` depende del contrato de salida de Vite (`dist/`) y de que el `base` sea `/clubes/`; si se cambia
   la ruta del SPA en Nginx, hay que cambiarla en los dos lugares.
 - El paquete `keycloak-js` se integra a mano (no hay un `keycloak-angular` equivalente a cargo).
 

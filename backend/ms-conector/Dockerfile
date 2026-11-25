@@ -16,7 +16,7 @@ RUN keytool -importcert -noprompt -alias clubes-local \
  && rm /tmp/clubes-local.pem
 
 WORKDIR /app
-COPY --from=build /app/target/dacs-conector-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/ms-conector-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 9002
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -3,9 +3,9 @@
 
 ## Capas Afectadas
 - [ ] `frontend/`
-- [ ] `backend/dacs-bff/`
-- [ ] `backend/dacs-backend/`
-- [ ] `backend/dacs-conector/`
+- [ ] `backend/ms-bff/`
+- [ ] `backend/ms-backend/`
+- [ ] `backend/ms-conector/`
 - [ ] `infra/` (Docker Compose / Nginx / Keycloak)
 - [ ] `.github/` (CI / Templates)
 

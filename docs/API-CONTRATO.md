@@ -16,7 +16,7 @@
 - **Puerta de entrada única:** el frontend nunca habla con `ms-backend` ni con `ms-conector`. Todo pasa por el
   BFF a través de Nginx.
 - **Base path público:** `/api`. Nginx reescribe `/api/<recurso>` → `/bff/<recurso>` y lo envía a
-  `http://bff:9001` (§9.4). El context path interno del BFF es `/bff`.
+  `http://ms-bff:9001` (§9.4). El context path interno del BFF es `/bff`.
 - **Autenticación:** access token JWT de Keycloak como Bearer (§2).
 - **Persistencia:** solo `ms-backend` accede a PostgreSQL.
 
@@ -39,7 +39,7 @@ generación de cuotas.
 
 ### 2.1 Token
 
-- El login ocurre contra Keycloak desde el frontend con **Standard Flow + PKCE S256**; el cliente `dacs-fe` es
+- El login ocurre contra Keycloak desde el frontend con **Standard Flow + PKCE S256**; el cliente `clubes-fe` es
   público y no tiene secreto (§9.6).
 - El frontend envía `Authorization: Bearer <access_token>` en cada request a `/api`.
 - El **BFF y `ms-backend` validan el JWT de forma independiente** como OAuth2 Resource Servers

@@ -10,9 +10,9 @@
 Navegador
    │ HTTPS 443 — https://clubes.local
    ▼
-Nginx ──► /dacs/  Frontend React (PWA, build estático)
-   ├────► /auth/  Keycloak :8080
-   └────► /api/   BFF :9001 ──► ms-backend :9003 ──► PostgreSQL :5432 (dacs_db)
+Nginx ──► /clubes/ Frontend React (PWA, build estático)
+   ├────► /auth/   Keycloak :8080
+   └────► /api/    BFF :9001 ──► ms-backend :9003 ──► PostgreSQL :5432 (clubes_db)
                             └─► ms-conector :9002 ──► APIs externas
 ```
 
@@ -25,10 +25,10 @@ Definidos en `infra/docker-compose.yml` (proyecto Compose: `nginx-docker`).
 | Servicio Compose | Contenedor | Puerto host → interno | Notas |
 |---|---|---|---|
 | `web` | `nginx_web` | `80:80`, `443:443` | Nginx: TLS, estáticos y proxy inverso |
-| `bff` | `dacs_bff` | `9001:9001` | Context path `/bff`; sin persistencia |
-| `dacs-backend` | `dacs-backend` | `9003:9003` | Context path `/backend`; único con JPA |
-| `dacs-conector` | `dacs-conector` | `9004:9002` | Context path `/conector`; sin persistencia |
-| `postgres` | `postgres_db` | `5433:5432` | Aloja `dacs_db` y `keycloak_db` |
+| `ms-bff` | `ms-bff` | `9001:9001` | Context path `/bff`; sin persistencia |
+| `ms-backend` | `ms-backend` | `9003:9003` | Context path `/backend`; único con JPA |
+| `ms-conector` | `ms-conector` | `9004:9002` | Context path `/conector`; sin persistencia |
+| `postgres` | `postgres_db` | `5433:5432` | Aloja `clubes_db` y `keycloak_db` |
 | `keycloak` | `keycloak-server` | `8080:8080` | `KC_HTTP_RELATIVE_PATH=auth` |
 | `pgadmin` | `pgadmin4_ui` | `5050:80` | UI de administración de la base |
 
@@ -38,29 +38,28 @@ Red interna: `nginx-docker_default`. Volumen de datos: `nginx-docker_postgres_da
 
 - **`:80`** → `301` a HTTPS.
 - **`:443`** con `cert.pem` / `key.pem` montados desde `infra/nginx/ssl/`.
-- **`location /dacs/`** → `alias /opt/dacs/` con `try_files $uri $uri/ /dacs/index.html`. Sirve el build de
+- **`location /clubes/`** → `alias /opt/clubes/` con `try_files $uri $uri/ /clubes/index.html`. Sirve el build de
   Vite copiado dentro de la imagen del frontend.
-- **`location = /dacs`** → `301` a `/dacs/`.
-- **`location = /`** → `302` a `/dacs/`.
+- **`location = /clubes`** → `301` a `/clubes/`.
+- **`location = /`** → `302` a `/clubes/`.
 - **`location /`** → `404`. Nada se sirve en la raíz del dominio.
-- **`location /api/`** → reescribe `/api/(.*)` a `/bff/$1` y proxya a `http://bff:9001`, propagando
+- **`location /api/`** → reescribe `/api/(.*)` a `/bff/$1` y proxya a `http://ms-bff:9001`, propagando
   `Host`, `X-Real-IP`, `X-Forwarded-For` y `X-Forwarded-Proto`.
 - **`location /auth/`** → proxya a `http://keycloak:8080/auth/` con `proxy_buffering off` y `proxy_cache off`
   (Keycloak necesita streaming y no cachear).
 
 ## 4. Keycloak
 
-- **Realm:** `dacs`, importado automáticamente al primer arranque desde `infra/keycloak/dacs-realm.json`
-  (`--import-realm`). El contenedor lo monta en `/opt/keycloak/data/import/dacs-realm.json`: si el realm no
+- **Realm:** `clubes`, importado automáticamente al primer arranque desde `infra/keycloak/clubes-realm.json`
+  (`--import-realm`). El contenedor lo monta en `/opt/keycloak/data/import/clubes-realm.json`: si el realm no
   aparece, revisá primero ese mount. Si el realm ya existe en la base, **no se reimporta**: los cambios del JSON
   no pisan datos existentes.
-- **Cliente del frontend:** `dacs-fe`, público, Standard Flow + PKCE.
+- **Cliente del frontend:** `clubes-fe`, público, Standard Flow + PKCE.
   `redirectUris` incluyen `https://clubes.local/*` y `http://localhost:5173/*` (puerto de **Vite**).
-- **Roles:** el realm exportado todavía tiene `ROLE-A` / `ROLE-B` como **placeholder**. Los 5 roles canónicos
-  (`SUPERADMIN`, `ADMIN_CLUB`, `TESORERO`, `DELEGADO`, `ENTRENADOR`) los define `adr/0005` y hay que crearlos
-  en el realm antes de implementar `SecurityConfig`.
-- **Usuarios de desarrollo** del realm actual: `admin`, `user-a`, `user-b` (contraseña de desarrollo `1234`).
-- **Base de datos:** `keycloak_db` con rol propio `keycloak` — **no** usa `dacs_db`.
+- **Roles:** los 5 roles canónicos
+  (`SUPERADMIN`, `ADMIN_CLUB`, `TESORERO`, `DELEGADO`, `ENTRENADOR`) definidos según `adr/0005`.
+- **Usuarios de desarrollo** del realm actual: `admin`, `admin-club`, `tesorero`, `delegado`, `entrenador` (contraseña de desarrollo `1234`).
+- **Base de datos:** `keycloak_db` con rol propio `keycloak` — **no** usa `clubes_db`.
 
 ## 5. PostgreSQL
 
@@ -68,10 +67,10 @@ Dos bases en la misma instancia, con credenciales distintas:
 
 | Base | Rol dueño | Uso |
 |---|---|---|
-| `dacs_db` | `dacs` (`POSTGRES_USER`) | Dominio de la aplicación |
+| `clubes_db` | `clubes` (`POSTGRES_USER`) | Dominio de la aplicación |
 | `keycloak_db` | `keycloak` (`KEYCLOAK_DB_USER`) | Persistencia de Keycloak |
 
-El rol `keycloak` **no puede escribir en `dacs_db`** (verificado: `permission denied for schema public`).
+El rol `keycloak` **no puede escribir en `clubes_db`** (verificado: `permission denied for schema public`).
 
 `keycloak_db` se crea con `infra/postgres/init/01-create-keycloak-db.sh`, que se ejecuta **solo cuando el
 volumen está vacío**. Es idempotente y cita identificadores con `format('%I')`/`%L`, así que tolera
@@ -159,7 +158,7 @@ Mientras no exista código de aplicación, levantar solo la base:
 docker compose up -d postgres pgadmin keycloak
 ```
 
-**Estado real del repositorio:** `web`, `bff`, `dacs-backend` y `dacs-conector` **no construyen** todavía
+**Estado real del repositorio:** `web`, `ms-bff`, `ms-backend` y `ms-conector` **no construyen** todavía
 (faltan `package.json`, `pom.xml` y `src/`). Con lo que hay, arriba únicamente la infraestructura.
 
 Parar sin perder datos:
@@ -180,17 +179,17 @@ docker compose down
 | Actuator del BFF | `https://clubes.local/api/metrics/health` → `/bff/metrics/health` |
 | Actuator por puerto directo | `http://localhost:9001/bff/metrics/health` — separa "BFF caído" de "Nginx caído" |
 | Salud de PostgreSQL | healthcheck del Compose (`pg_isready`) |
-| Realm de Keycloak | `https://clubes.local/auth/realms/dacs` |
+| Realm de Keycloak | `https://clubes.local/auth/realms/clubes` |
 
 ## 9. Pendientes de infraestructura
 
 1. **Código de aplicación inexistente** — bloquea el `up --build` completo y el CI.
-2. **Roles placeholder en el realm** — hay que crear los 5 canónicos y quitar `ROLE-A`/`ROLE-B`.
-3. **`directAccessGrantsEnabled: true`** en el cliente público `dacs-fe`: el informe especifica Standard Flow
+2. **Roles canónicos en el realm** — ya configurados en `clubes-realm.json`.
+3. **`directAccessGrantsEnabled: true`** en el cliente público `clubes-fe`: el informe especifica Standard Flow
    con PKCE. Habilitar el password grant en un SPA es una decisión pendiente de cerrar.
 4. **Migraciones** sin definir (Flyway / Liquibase / `ddl-auto`); ver `DB-SCHEMA.md` §7.
 5. **JVM del host** sin el certificado (afecta solo a ejecución desde IDE, no a contenedores).
-6. **pgAdmin puede mostrar `dacs_db` y `keycloak_db`** con el usuario `dacs`; para administrar `keycloak_db`
+6. **pgAdmin puede mostrar `clubes_db` y `keycloak_db`** con el usuario `clubes`; para administrar `keycloak_db`
    hay que conectarse con el rol `keycloak` o como superusuario.
 7. **Salida a internet desde `ms-conector`** para el envío por CallMeBot (`api.callmebot.com`): requiere egress
    de red. El `cacerts` de las imágenes conserva las CA públicas, así que el certificado local no interfiere;

@@ -145,7 +145,7 @@ Resumidas acá; el razonamiento completo y las alternativas descartadas están e
 5. **5 roles en Keycloak** + alcance por categoría en PostgreSQL. → `adr/0005`
 6. **BFF + microservicios + Nginx** como arquitectura de aplicación. → `adr/0006`
 7. **React + Vite** como stack del frontend. → `adr/0007`
-8. **Docker Compose con `keycloak_db` separada** de `dacs_db`. → `adr/0008`
+8. **Docker Compose con `keycloak_db` separada** de `clubes_db`. → `adr/0008`
 9. **Notificaciones de cumpleaños con CallMeBot** encapsuladas en `ms-conector`. → `adr/0010`
 10. **Ciclo de vida de temporada** con `fecha_cierre` y una única temporada activa por liga. → `adr/0011`
 
@@ -154,13 +154,13 @@ Resumidas acá; el razonamiento completo y las alternativas descartadas están e
 Tres capas de aplicación sobre una infraestructura contenerizada:
 
 ```
-Navegador ──HTTPS──► Nginx ──► /dacs/  Frontend React (PWA)
-                       ├────► /auth/  Keycloak (OIDC, PKCE S256)
-                       └────► /api/   BFF :9001 ──► ms-backend :9003 ──► PostgreSQL 16
+Navegador ──HTTPS──► Nginx ──► /clubes/ Frontend React (PWA)
+                       ├────► /auth/   Keycloak (OIDC, PKCE S256)
+                       └────► /api/    BFF :9001 ──► ms-backend :9003 ──► PostgreSQL 16
                                                    └─► ms-conector :9002 ──► APIs externas
 ```
 
-- **Frontend:** SPA React (PWA), servida por Nginx en `/dacs/`.
+- **Frontend:** SPA React (PWA), servida por Nginx en `/clubes/`.
 - **BFF:** única API consumida por el frontend; orquesta, adapta DTO y estandariza errores. Sin persistencia.
 - **ms-backend:** lógica de negocio y persistencia JPA sobre PostgreSQL. Ejecuta el job diario (`@Scheduled`) de cumpleaños que persiste las notificaciones internas.
 - **ms-conector:** integración con servicios externos, incluido el envío de WhatsApp vía CallMeBot. Sin persistencia.
@@ -183,7 +183,7 @@ docker compose up -d postgres pgadmin keycloak
 Antes la primera vez hay que configurar el dominio local y el certificado: ver `INFRA.md` §6. Sin el
 certificado en `infra/nginx/ssl/`, el servicio `web` y las imágenes Java no construyen.
 
-Accesos: `https://clubes.local/dacs/` (frontend), `https://clubes.local/auth/admin` (Keycloak),
+Accesos: `https://clubes.local/clubes/` (frontend), `https://clubes.local/auth/admin` (Keycloak),
 `http://localhost:5050` (pgAdmin), `https://clubes.local/api/ping` (BFF).
 
 > **Estado actual del repositorio:** existe el andamiaje de infraestructura (Compose, Nginx, Keycloak,
