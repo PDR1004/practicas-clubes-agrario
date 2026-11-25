@@ -26,7 +26,7 @@ hasta que exista `frontend/package.json` y `backend/*/pom.xml`. El avance está 
 | Componente | Tecnología | Puerto host |
 |---|---|---|
 | Proxy inverso / TLS | Nginx 1.27 | `80`, `443` |
-| Cliente web (PWA) | React + Vite | servido en `/dacs/` |
+| Cliente web (PWA) | React + Vite | servido en `/clubes/` |
 | BFF | Spring Boot 3 · Java 21 | `9001` |
 | API de dominio | Spring Boot 3 · Java 21 · JPA | `9003` |
 | Conector externo | Spring Boot 3 · Java 21 | `9004` → interno `9002` |
@@ -40,13 +40,13 @@ hasta que exista `frontend/package.json` y `backend/*/pom.xml`. El avance está 
 Navegador
    │ HTTPS 443 — https://clubes.local
    ▼
-Nginx ──► /dacs/   Frontend React (build estático)
+Nginx ──► /clubes/ Frontend React (build estático)
    ├────► /auth/   Keycloak  (Standard Flow + PKCE S256)
-   └────► /api/    BFF :9001 ──► ms-backend :9003 ──► PostgreSQL 16 · dacs_db
+   └────► /api/    BFF :9001 ──► ms-backend :9003 ──► PostgreSQL 16 · clubes_db
                              └─► ms-conector :9002 ──► APIs externas
 ```
 
-Dos bases separadas en la misma instancia: **`dacs_db`** (dominio, rol `dacs`) y **`keycloak_db`**
+Dos bases separadas en la misma instancia: **`clubes_db`** (dominio, rol `clubes`) y **`keycloak_db`**
 (identidad, rol `keycloak`). Se crean solas en el primer arranque con
 `infra/postgres/init/01-create-keycloak-db.sh`.
 
@@ -57,9 +57,9 @@ Dos bases separadas en la misma instancia: **`dacs_db`** (dominio, rol `dacs`) y
 ├─ docs/                     Documentación del proyecto (ver tabla abajo)
 ├─ frontend/                 Dockerfile del cliente web (React + Vite)
 ├─ backend/
-│  ├─ dacs-bff/              BFF (:9001, context path /bff)
-│  ├─ dacs-backend/          API de dominio (:9003, /backend)
-│  └─ dacs-conector/         Conector externo (:9002, /conector)
+│  ├─ ms-bff/                BFF (:9001, context path /bff)
+│  ├─ ms-backend/            API de dominio (:9003, /backend)
+│  └─ ms-conector/           Conector externo (:9002, /conector)
 ├─ infra/
 │  ├─ docker-compose.yml     Servicios, volúmenes y red
 │  ├─ postgres/init/         Creación de keycloak_db en el primer arranque
@@ -148,17 +148,17 @@ Para detener sin perder datos: `docker compose down`.
 
 | Qué | Dónde |
 |---|---|
-| Aplicación web | <https://clubes.local/dacs/> |
+| Aplicación web | <https://clubes.local/clubes/> |
 | Consola Keycloak | <https://clubes.local/auth/admin> |
-| Realm | <https://clubes.local/auth/realms/dacs> |
+| Realm | <https://clubes.local/auth/realms/clubes> |
 | pgAdmin | <http://localhost:5050> |
 | Ping del BFF | <https://clubes.local/api/ping> |
 | Ping al backend | <https://clubes.local/api/backendping> |
 | Ping al conector | <https://clubes.local/api/conectorping> |
 | Health del BFF | <https://clubes.local/api/metrics/health> |
 
-Usuarios de desarrollo del realm: `admin`, `user-a`, `user-b` (contraseña `1234`, definida en
-`infra/keycloak/dacs-realm.json`).
+Usuarios de desarrollo del realm: `admin`, `admin-club`, `tesorero`, `delegado`, `entrenador` (contraseña `1234`, definida en
+`infra/keycloak/clubes-realm.json`).
 
 ## Flujo de trabajo
 

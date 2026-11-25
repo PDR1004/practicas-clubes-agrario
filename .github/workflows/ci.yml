@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [dacs-bff, dacs-backend, dacs-conector]
+        service: [ms-bff, ms-backend, ms-conector]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

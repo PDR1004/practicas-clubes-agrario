@@ -14,55 +14,55 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./nginx/web:/usr/share/nginx/html:ro
     depends_on:
-      - bff
+      - ms-bff
       - keycloak
     restart: unless-stopped
 
-  bff:
+  ms-bff:
     build:
-      context: ../backend/dacs-bff
+      context: ../backend/ms-bff
       additional_contexts:
         certs: ./nginx/ssl
       dockerfile: Dockerfile
-    container_name: dacs_bff
+    container_name: ms-bff
     ports:
       - "9001:9001"
     environment:
-      KEYCLOAK_ISSUER_URI: https://clubes.local/auth/realms/dacs
-      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/dacs/protocol/openid-connect/certs
-      MS_BACKEND_URL: http://dacs-backend:9003/backend
-      MS_CONECTOR_URL: http://dacs-conector:9002/conector
+      KEYCLOAK_ISSUER_URI: https://clubes.local/auth/realms/clubes
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/clubes/protocol/openid-connect/certs
+      MS_BACKEND_URL: http://ms-backend:9003/backend
+      MS_CONECTOR_URL: http://ms-conector:9002/conector
     depends_on:
-      - dacs-backend
+      - ms-backend
     restart: unless-stopped
 
-  dacs-backend:
+  ms-backend:
     build:
-      context: ../backend/dacs-backend
+      context: ../backend/ms-backend
       additional_contexts:
         certs: ./nginx/ssl
       dockerfile: Dockerfile
-    container_name: dacs-backend
+    container_name: ms-backend
     ports:
       - "9003:9003"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      KEYCLOAK_ISSUER_URI: https://clubes.local/auth/realms/dacs
-      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/dacs/protocol/openid-connect/certs
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-dacs_db}
+      KEYCLOAK_ISSUER_URI: https://clubes.local/auth/realms/clubes
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/clubes/protocol/openid-connect/certs
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-clubes_db}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     restart: unless-stopped
 
-  dacs-conector:
+  ms-conector:
     build:
-      context: ../backend/dacs-conector
+      context: ../backend/ms-conector
       additional_contexts:
         certs: ./nginx/ssl
       dockerfile: Dockerfile
-    container_name: dacs-conector
+    container_name: ms-conector
     ports:
       - "9004:9002"
     restart: unless-stopped
@@ -106,7 +106,7 @@ services:
       KC_DB_URL_DATABASE: ${KEYCLOAK_DB:?Set KEYCLOAK_DB in .env}
     command: ["start", "--import-realm"]
     volumes:
-      - ./keycloak/dacs-realm.json:/opt/keycloak/data/import/dacs-realm.json:ro
+      - ./keycloak/clubes-realm.json:/opt/keycloak/data/import/clubes-realm.json:ro
     ports:
       - "8080:8080"
     depends_on:

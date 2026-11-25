@@ -1,7 +1,7 @@
 {
-  "realm": "dacs",
+  "realm": "clubes",
   "enabled": true,
-  "displayName": "Club Agrario Rocamora - DACS",
+  "displayName": "Club Agrario Rocamora - Gestion de Clubes",
   "sslRequired": "external",
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
@@ -36,8 +36,8 @@
   },
   "clients": [
     {
-      "clientId": "dacs-fe",
-      "name": "DACS Frontend (React)",
+      "clientId": "clubes-fe",
+      "name": "Clubes Frontend (React)",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,
@@ -47,7 +47,7 @@
       "serviceAccountsEnabled": false,
       "fullScopeAllowed": true,
       "rootUrl": "https://clubes.local",
-      "baseUrl": "/dacs/",
+      "baseUrl": "/clubes/",
       "redirectUris": [
         "https://clubes.local/*",
         "http://localhost:5173/*",
@@ -116,7 +116,7 @@
         }
       ],
       "realmRoles": [
-        "default-roles-dacs",
+        "default-roles-clubes",
         "SUPERADMIN"
       ]
     },
@@ -140,7 +140,7 @@
         }
       ],
       "realmRoles": [
-        "default-roles-dacs",
+        "default-roles-clubes",
         "ADMIN_CLUB"
       ]
     },
@@ -164,7 +164,7 @@
         }
       ],
       "realmRoles": [
-        "default-roles-dacs",
+        "default-roles-clubes",
         "TESORERO"
       ]
     },
@@ -188,7 +188,7 @@
         }
       ],
       "realmRoles": [
-        "default-roles-dacs",
+        "default-roles-clubes",
         "DELEGADO"
       ]
     },
@@ -212,7 +212,7 @@
         }
       ],
       "realmRoles": [
-        "default-roles-dacs",
+        "default-roles-clubes",
         "ENTRENADOR"
       ]
     }

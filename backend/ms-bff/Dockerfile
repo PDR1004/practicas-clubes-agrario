@@ -3,7 +3,7 @@ FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn -B -P dacs-env -DskipTests -Dmaven.gitcommitid.skip=true package
+RUN mvn -B -DskipTests package
 
 FROM eclipse-temurin:21-jre-alpine
 
@@ -16,7 +16,7 @@ RUN keytool -importcert -noprompt -alias clubes-local \
  && rm /tmp/clubes-local.pem
 
 WORKDIR /app
-COPY --from=build /app/target/dacs-backend-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/ms-bff-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 9003
+EXPOSE 9001
 ENTRYPOINT ["java", "-jar", "app.jar"]

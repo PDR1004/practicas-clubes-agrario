@@ -299,7 +299,7 @@ erDiagram
 **No definido todavía.** El repositorio no tiene migraciones ni configuración de `ddl-auto`. Las opciones, a
 decidir antes de la primera tabla (y a registrar en un ADR):
 
-1. **Flyway** o **Liquibase** con migraciones versionadas en `backend/dacs-backend/src/main/resources/db/`.
+1. **Flyway** o **Liquibase** con migraciones versionadas en `backend/ms-backend/src/main/resources/db/`.
 2. **`ddl-auto: validate`** en todos los entornos una vez creado el esquema (nunca `update` en un repo compartido).
 
 Regla: una vez que exista la primera migración, **el esquema se cambia con una migración nueva**, nunca editando

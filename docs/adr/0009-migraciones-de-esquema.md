@@ -13,7 +13,7 @@ rehacer el historial.
 ## Decisión propuesta
 
 1. **Flyway** con migraciones versionadas en
-   `backend/dacs-backend/src/main/resources/db/migration/` (`V1__esquema_inicial.sql`, …).
+   `backend/ms-backend/src/main/resources/db/migration/` (`V1__esquema_inicial.sql`, …).
 2. `spring.jpa.hibernate.ddl-auto: validate` en **todos** los entornos.
 3. El esquema se cambia **solo** con una migración nueva; nunca editando una migración ya aplicada.
 
@@ -36,4 +36,4 @@ rehacer el historial.
 ## Referencias
 
 - `docs/DB-SCHEMA.md` §7.
-- `backend/dacs-backend/Dockerfile`, `backend/dacs-backend/pom.xml` (todavía inexistente).
+- `backend/ms-backend/Dockerfile`, `backend/ms-backend/pom.xml` (todavía inexistente).

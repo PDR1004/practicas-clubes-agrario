@@ -7,12 +7,12 @@
 
 El `docker-compose.yml` inicial hacía que Keycloak usara las mismas credenciales y la misma base que la
 aplicación (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`). El resultado: las 101 tablas del IdP convivían
-con el esquema de negocio en `dacs_db`, y el rol de la aplicación podía leerlas.
+con el esquema de negocio en `clubes_db`, y el rol de la aplicación podía leerlas.
 
 ## Decisión
 
-1. Dos bases en la **misma instancia** PostgreSQL 16: `dacs_db` (dominio) y `keycloak_db` (IdP).
-2. Dos roles: `dacs` (dueño de `dacs_db`) y `keycloak` (dueño de `keycloak_db`), con contraseñas distintas.
+1. Dos bases en la **misma instancia** PostgreSQL 16: `clubes_db` (dominio) y `keycloak_db` (IdP).
+2. Dos roles: `clubes` (dueño de `clubes_db`) y `keycloak` (dueño de `keycloak_db`), con contraseñas distintas.
 3. `keycloak_db` se crea en la primera inicialización con
    `infra/postgres/init/01-create-keycloak-db.sh`, montado en `/docker-entrypoint-initdb.d`. El script es
    idempotente y cita identificadores con `format('%I')` / `%L`.
@@ -32,8 +32,8 @@ con el esquema de negocio en `dacs_db`, y el rol de la aplicación podía leerla
 
 Positivas:
 
-- Aislamiento real, verificado: el rol `keycloak` no puede crear tablas en `dacs_db`.
-- El dump de `dacs_db` es del dominio, sin ruido del IdP.
+- Aislamiento real, verificado: el rol `keycloak` no puede crear tablas en `clubes_db`.
+- El dump de `clubes_db` es del dominio, sin ruido del IdP.
 
 Negativas:
 

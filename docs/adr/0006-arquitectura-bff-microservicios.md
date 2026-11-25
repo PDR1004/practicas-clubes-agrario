@@ -11,7 +11,7 @@ servicios externos (IAPSER, mensajería, APIs de la liga). El frontend no debe c
 
 ## Decisión
 
-1. **Nginx** como puerta de entrada única: termina TLS, sirve el SPA en `/dacs/`, y rutea `/auth/` y `/api/`.
+1. **Nginx** como puerta de entrada única: termina TLS, sirve el SPA en `/clubes/`, y rutea `/auth/` y `/api/`.
 2. **BFF** (`/bff`, :9001) como única API consumida por el frontend. Orquesta llamadas internas con OpenFeign,
    adapta DTO y **estandariza el envelope de error** `{ status, code, description, message }`. Sin persistencia.
 3. **`ms-backend`** (`/backend`, :9003) con la lógica de negocio y la persistencia JPA sobre PostgreSQL.
