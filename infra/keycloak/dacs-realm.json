@@ -1,7 +1,7 @@
 {
   "realm": "dacs",
   "enabled": true,
-  "displayName": "Mayorista Del Puerto - DACS",
+  "displayName": "Club Agrario Rocamora - DACS",
   "sslRequired": "external",
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
@@ -9,15 +9,28 @@
   "resetPasswordAllowed": false,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
+  "accessTokenLifespan": 300,
   "roles": {
     "realm": [
       {
-        "name": "ROLE-A",
-        "description": "Operador de Deposito (ABM Productos, Recepciones y Egresos)"
+        "name": "SUPERADMIN",
+        "description": "Administrador global de la Liga"
       },
       {
-        "name": "ROLE-B",
-        "description": "Supervisor / Auditor (Consulta de Stock, Lotes FEFO y Alertas)"
+        "name": "ADMIN_CLUB",
+        "description": "Administrador de Club"
+      },
+      {
+        "name": "TESORERO",
+        "description": "Tesorero del Club"
+      },
+      {
+        "name": "DELEGADO",
+        "description": "Delegado de categoria del Club"
+      },
+      {
+        "name": "ENTRENADOR",
+        "description": "Entrenador de categoria del Club"
       }
     ]
   },
@@ -49,55 +62,52 @@
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "+"
-      }
+      },
+      "protocolMappers": [
+        {
+          "name": "id_club-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "id_club",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "id_club",
+            "jsonType.label": "int"
+          }
+        },
+        {
+          "name": "id_liga-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "id_liga",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "id_liga",
+            "jsonType.label": "int"
+          }
+        }
+      ]
     }
   ],
   "users": [
     {
-      "username": "user-a",
-      "enabled": true,
-      "emailVerified": true,
-      "firstName": "Operador",
-      "lastName": "Deposito",
-      "email": "operador@delpuerto.local",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "1234",
-          "temporary": false
-        }
-      ],
-      "realmRoles": [
-        "default-roles-dacs",
-        "ROLE-A"
-      ]
-    },
-    {
-      "username": "user-b",
-      "enabled": true,
-      "emailVerified": true,
-      "firstName": "Supervisor",
-      "lastName": "Auditoria",
-      "email": "supervisor@delpuerto.local",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "1234",
-          "temporary": false
-        }
-      ],
-      "realmRoles": [
-        "default-roles-dacs",
-        "ROLE-B"
-      ]
-    },
-    {
       "username": "admin",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "Admin",
-      "lastName": "Del Puerto",
-      "email": "admin@delpuerto.local",
+      "firstName": "Super",
+      "lastName": "Admin",
+      "email": "superadmin@clubes.local",
+      "attributes": {
+        "id_liga": [
+          "1"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -107,8 +117,103 @@
       ],
       "realmRoles": [
         "default-roles-dacs",
-        "ROLE-A",
-        "ROLE-B"
+        "SUPERADMIN"
+      ]
+    },
+    {
+      "username": "admin-club",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "Club",
+      "email": "admin.club@clubes.local",
+      "attributes": {
+        "id_club": [
+          "1"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-dacs",
+        "ADMIN_CLUB"
+      ]
+    },
+    {
+      "username": "tesorero",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tesorero",
+      "lastName": "Club",
+      "email": "tesorero@clubes.local",
+      "attributes": {
+        "id_club": [
+          "1"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-dacs",
+        "TESORERO"
+      ]
+    },
+    {
+      "username": "delegado",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Delegado",
+      "lastName": "Categoria",
+      "email": "delegado@clubes.local",
+      "attributes": {
+        "id_club": [
+          "1"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-dacs",
+        "DELEGADO"
+      ]
+    },
+    {
+      "username": "entrenador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Entrenador",
+      "lastName": "Categoria",
+      "email": "entrenador@clubes.local",
+      "attributes": {
+        "id_club": [
+          "1"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-dacs",
+        "ENTRENADOR"
       ]
     }
   ]
