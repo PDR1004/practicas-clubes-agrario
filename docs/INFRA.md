@@ -56,9 +56,13 @@ Red interna: `nginx-docker_default`. Volumen de datos: `nginx-docker_postgres_da
   no pisan datos existentes.
 - **Cliente del frontend:** `clubes-fe`, público, Standard Flow + PKCE.
   `redirectUris` incluyen `https://clubes.local/*` y `http://localhost:5173/*` (puerto de **Vite**).
-- **Roles:** los 5 roles canónicos
-  (`SUPERADMIN`, `ADMIN_CLUB`, `TESORERO`, `DELEGADO`, `ENTRENADOR`) definidos según `adr/0005`.
-- **Usuarios de desarrollo** del realm actual: `admin`, `admin-club`, `tesorero`, `delegado`, `entrenador` (contraseña de desarrollo `1234`).
+- **Roles:** los 5 roles canónicos (`SUPERADMIN`, `ADMIN_CLUB`, `TESORERO`, `DELEGADO`, `ENTRENADOR`), definidos por `adr/0005`, ya están creados en `infra/keycloak/clubes-realm.json`.
+- **Usuarios de desarrollo** del realm actual (contraseña de desarrollo: `1234`, definida en `infra/keycloak/clubes-realm.json`):
+  - `admin` (SUPERADMIN, id_liga=1)
+  - `admin-club` (ADMIN_CLUB, id_club=1)
+  - `tesorero` (TESORERO, id_club=1)
+  - `delegado` (DELEGADO, id_club=1)
+  - `entrenador` (ENTRENADOR, id_club=1)
 - **Base de datos:** `keycloak_db` con rol propio `keycloak` — **no** usa `clubes_db`.
 
 ## 5. PostgreSQL
@@ -184,7 +188,7 @@ docker compose down
 ## 9. Pendientes de infraestructura
 
 1. **Código de aplicación inexistente** — bloquea el `up --build` completo y el CI.
-2. **Roles canónicos en el realm** — ya configurados en `clubes-realm.json`.
+2. [HECHO] **Roles del realm** — los 5 roles canónicos ya están definidos y sin placeholders en `infra/keycloak/clubes-realm.json`.
 3. **`directAccessGrantsEnabled: true`** en el cliente público `clubes-fe`: el informe especifica Standard Flow
    con PKCE. Habilitar el password grant en un SPA es una decisión pendiente de cerrar.
 4. **Migraciones** sin definir (Flyway / Liquibase / `ddl-auto`); ver `DB-SCHEMA.md` §7.

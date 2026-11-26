@@ -237,8 +237,10 @@ Notas de RF07:
    informar cuántas se crearon y cuántas se omitieron.
 5. **Los PDF y XLSX** dependen de layouts oficiales que todavía no se conocen (preguntas 9 y 3 del
    `CONTEXTO.md` §11). El mapeo de columnas IAPSER va aislado y parametrizado.
-6. **El claim `id_club`** requiere configurar protocol mappers en Keycloak; mientras no exista, el BFF resuelve
-   el alcance por `keycloak_sub` contra la base.
+6. **Claims `id_club` e `id_liga`**: los mappers ya están definidos en el cliente `clubes-fe`
+   (claims enteros en access token, id token y userinfo; ver `infra/keycloak/clubes-realm.json`).
+   Alcance previsto del BFF: si el claim no viniera en el token, resolver el alcance por `keycloak_sub`
+   contra la base (fallback aún no implementado: el código backend no existe todavía).
 7. **Errores de negocio**: la distinción 409 (unicidad) vs 422 (regla de negocio) es convención de este
    documento; si el equipo prefiere otro mapeo, se actualiza acá primero.
 8. **Credenciales de CallMeBot sin modelo**: el envío automático necesita el número y la API key personal de cada
