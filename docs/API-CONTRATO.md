@@ -1,6 +1,6 @@
 # Club Agrario Rocamora — Contrato de la API (v1)
 
-> Fuente: §9 del informe (arquitectura BFF, error envelope), §7 (roles) y las 19 HU de §3.1.1.
+> Fuente: §9 del informe (arquitectura BFF, error envelope), §7 (roles) y las 22 HU de §3.1.1.
 >
 > **Estado: BORRADOR.** El informe define la arquitectura, el envelope de errores y los roles, pero **no**
 > define endpoints. La lista de §5 es una **propuesta derivada de las historias de usuario** para arrancar el
@@ -90,7 +90,7 @@ El BFF estandariza todas las respuestas de error (§9.5):
 | 403 | `bff_403` | Rol insuficiente, usuario inactivo o acceso a otro club |
 | 404 | `bff_404` | Recurso inexistente |
 | 409 | `bff_409` | Choque de unicidad: CUIT, DNI+liga, `(id_fichaje, periodo)`, dorsal, recibo, **temporada activa duplicada** |
-| 422 | `bff_422` | Regla de negocio violada: RN-01 a RN-16, transición inválida |
+| 422 | `bff_422` | Regla de negocio violada: RN-01 a RN-24, transición inválida |
 | 502 | `bff_502` | `ms-backend` o `ms-conector` no responden |
 
 Regla para el agente: **ningún servicio devuelve su envelope crudo al frontend**; el BFF traduce.
@@ -203,10 +203,10 @@ Agrupados por módulo, con la HU que los origina. Los nombres son convención pr
 |---|---|---|
 | `GET` | `/notificaciones` | Avisos del usuario |
 | `PATCH` | `/notificaciones/{id}/leida` | Marcar como leída |
-| `GET` | `/api/ping` | Ping del BFF |
-| `GET` | `/api/backendping` | Ping en cascada a `ms-backend` |
-| `GET` | `/api/conectorping` | Ping en cascada a `ms-conector` |
-| `GET` | `/api/metrics/health` | Actuator (`/bff/metrics/health`) |
+| `GET` | `/ping` | Ping del BFF |
+| `GET` | `/backendping` | Ping en cascada a `ms-backend` |
+| `GET` | `/conectorping` | Ping en cascada a `ms-conector` |
+| `GET` | `/metrics/health` | Actuator del BFF (interno: `/bff/metrics/health`) |
 
 Notas de RF07:
 
