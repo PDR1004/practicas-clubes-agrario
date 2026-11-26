@@ -132,6 +132,12 @@ ALTER TABLE cuota ADD CONSTRAINT uq_cuota_fichaje_periodo UNIQUE (id_fichaje, pe
 CREATE UNIQUE INDEX uq_fichaje_vigente
   ON fichaje_inscripcion (id_jugador)
   WHERE fecha_baja IS NULL;
+
+-- Un usuario no puede tener dos cargos vigentes a la vez (historial de cargos de RF05).
+-- fecha_fin IS NULL es el predicado de vigencia del cargo.
+CREATE UNIQUE INDEX uq_usuario_rol_vigente
+  ON usuario_rol (id_usuario)
+  WHERE fecha_fin IS NULL;
 ```
 
 ### 3.3 CHECKs sobre estados enumerados
@@ -200,24 +206,22 @@ Se implementan en `ms-backend`, dentro de una transacción:
    `convocatoria_partido` del mismo encuentro.
 4. **Autorización sobre tutores (§8.1.13):** toda consulta a `tutor` / `jugador_tutor` desde un usuario de club
    debe verificar que el jugador tiene fichaje vigente en ese club.
-5. **Un cargo vigente por usuario:** índice único parcial `(id_usuario) where fecha_fin is null` *(derivado del
-   historial de cargos de RF05; el informe no lo declara explícitamente).*
-6. **Máximo 2 tutores vigentes por jugador (RN-02):** validación de aplicación; un `count` sobre
+5. **Máximo 2 tutores vigentes por jugador (RN-02):** validación de aplicación; un `count` sobre
    `jugador_tutor where fecha_hasta is null` antes de insertar.
-7. **Cierre de temporada (RN-18, RN-22):** al cerrar, dentro de la misma transacción, se pasa a `Suspendido`
+6. **Cierre de temporada (RN-18, RN-22):** al cerrar, dentro de la misma transacción, se pasa a `Suspendido`
    todo `partido` de esa temporada que siga en `Programado`, y la temporada queda inmutable (reabrir → 409).
    Después del cierre se rechaza la creación de `partido`, `fichaje_inscripcion` y `cuota` en cualquier
    `club_temporada_categoria` de ese ciclo —resolviendo la temporada por join— pero **se permite** insertar
    `pago` y transicionar `estado_cuota` sobre cuotas ya emitidas. Los fichajes vigentes **no** se cierran.
-8. **Renovación de planteles idempotente (RN-20):** aplica solo a fichajes con `tipo_fichaje = 'Propio'`.
+7. **Renovación de planteles idempotente (RN-20):** aplica solo a fichajes con `tipo_fichaje = 'Propio'`.
    Crea el fichaje nuevo y cierra el anterior en una transacción; re-ejecutar no duplica. El índice
    `uq_fichaje_vigente` actúa como red de seguridad, pero la operación debe reportar omitidos, no fallar.
-9. **Job diario de cumpleaños sin duplicados** *(derivado)*: antes de insertar en `notificacion`, verificar que
+8. **Job diario de cumpleaños sin duplicados** *(derivado)*: antes de insertar en `notificacion`, verificar que
    no exista ya una del mismo `(id_usuario, id_jugador, tipo_notificacion)` para la fecha del día. El informe no
    lo declara, pero el job es `@Scheduled` y puede reejecutarse.
-10. **Rango etario inmutable con historia (RN-23):** editar `categoria.anio_desde` / `anio_hasta` se rechaza si
-    la categoría tiene filas en `club_temporada_categoria` cuyo `temporada.fecha_cierre` no sea nulo. Requiere
-    join, por lo tanto es validación de aplicación.
+9. **Rango etario inmutable con historia (RN-23):** editar `categoria.anio_desde` / `anio_hasta` se rechaza si
+   la categoría tiene filas en `club_temporada_categoria` cuyo `temporada.fecha_cierre` no sea nulo. Requiere
+   join, por lo tanto es validación de aplicación.
 
 ### 3.7 Índices por camino de lectura *(derivado)*
 
@@ -249,7 +253,7 @@ CREATE INDEX idx_jugador_fecha_nac      ON jugador (fecha_nacimiento);
 
 ## 5. Lo que queda en la capa de aplicación
 
-- **RN-01 a RN-16** (`CONTEXTO.md` §6): todas las validaciones de negocio.
+- **RN-01 a RN-24** (`CONTEXTO.md` §6): todas las validaciones de negocio.
 - Cálculo de `monto_base`, `descuento_aplicado` y detección del "segundo hermano" (HU07).
 - Generación masiva de cuotas y su idempotencia (HU17).
 - Transiciones de estado de cuota y de fichaje.
