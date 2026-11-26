@@ -157,8 +157,12 @@ Para detener sin perder datos: `docker compose down`.
 | Ping al conector | <https://clubes.local/api/conectorping> |
 | Health del BFF | <https://clubes.local/api/metrics/health> |
 
-Usuarios de desarrollo del realm: `admin`, `admin-club`, `tesorero`, `delegado`, `entrenador` (contraseña `1234`, definida en
-`infra/keycloak/clubes-realm.json`).
+Usuarios de desarrollo del realm (contraseña de desarrollo: `1234`, definida en `infra/keycloak/clubes-realm.json`):
+- `admin` (SUPERADMIN, id_liga=1)
+- `admin-club` (ADMIN_CLUB, id_club=1)
+- `tesorero` (TESORERO, id_club=1)
+- `delegado` (DELEGADO, id_club=1)
+- `entrenador` (ENTRENADOR, id_club=1)
 
 ## Flujo de trabajo
 
