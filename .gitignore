@@ -13,6 +13,9 @@ secrets/
 # Configuración local del agente (opencode.json contiene el token de Atlassian)
 .opencode/opencode.json
 
+# Artefactos locales del agente (índice de skills, caches): no se comparten
+.atl/
+
 # Dependencias y artefactos de compilación
 **/node_modules/
 **/.vite/

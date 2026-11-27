@@ -51,6 +51,7 @@ services:
     environment:
       KEYCLOAK_ISSUER_URI: https://clubes.local/auth/realms/clubes
       KEYCLOAK_JWK_SET_URI: http://keycloak:8080/auth/realms/clubes/protocol/openid-connect/certs
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-clubes_db}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}

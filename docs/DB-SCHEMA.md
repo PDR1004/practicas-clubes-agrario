@@ -300,14 +300,14 @@ erDiagram
 
 ## 7. Migraciones
 
-**No definido todavía.** El repositorio no tiene migraciones ni configuración de `ddl-auto`. Las opciones, a
-decidir antes de la primera tabla (y a registrar en un ADR):
+**Flyway** (ver `adr/0009`). Las migraciones versionadas viven en
+`backend/ms-backend/src/main/resources/db/migration/` y se aplican al arrancar el servicio.
 
-1. **Flyway** o **Liquibase** con migraciones versionadas en `backend/ms-backend/src/main/resources/db/`.
-2. **`ddl-auto: validate`** en todos los entornos una vez creado el esquema (nunca `update` en un repo compartido).
+Reglas:
 
-Regla: una vez que exista la primera migración, **el esquema se cambia con una migración nueva**, nunca editando
-la anterior.
+1. El esquema se cambia **solo** con una migración nueva (`V2__…`, `V3__…`); nunca editando una ya aplicada.
+2. `ddl-auto: validate` en todos los entornos: Hibernate valida, no crea.
+3. La primera migración, `V1__esquema_inicial.sql`, contiene el esquema completo de §2 y §3.
 
 ## 8. Riesgos y pendientes
 
