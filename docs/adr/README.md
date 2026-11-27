@@ -35,7 +35,7 @@ Convenciones:
 | [ADR-0006](0006-arquitectura-bff-microservicios.md) | Arquitectura BFF + microservicios + Nginx | Aceptada | 2026-11-23 |
 | [ADR-0007](0007-frontend-react-vite.md) | Frontend React + Vite | Aceptada | 2026-11-23 |
 | [ADR-0008](0008-compose-keycloak-db-separada.md) | Docker Compose con base de Keycloak separada | Aceptada | 2026-11-23 |
-| [ADR-0009](0009-migraciones-de-esquema.md) | Motor de migraciones del esquema | Propuesta | 2026-11-23 |
+| [ADR-0009](0009-migraciones-de-esquema.md) | Motor de migraciones del esquema | Aceptada | 2026-11-23 |
 | [ADR-0010](0010-notificaciones-cumpleanos-callmebot.md) | Notificaciones de cumpleaños con CallMeBot | Propuesta | 2026-11-23 |
 | [ADR-0011](0011-ciclo-de-vida-temporada.md) | Ciclo de vida de temporada | Aceptada | 2026-11-23 |
 

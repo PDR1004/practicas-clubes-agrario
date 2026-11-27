@@ -1,7 +1,8 @@
 # ADR-0009: Motor de migraciones del esquema
 
-- **Estado**: Propuesta
+- **Estado**: Aceptada
 - **Fecha**: 2026-11-23
+- **Aceptada**: 2026-11-27
 
 ## Contexto
 
@@ -10,12 +11,20 @@ PostgreSQL 16 y el esquema ya está diseñado (`docs/DB-SCHEMA.md`), pero nada d
 evoluciona. Esta decisión hay que tomarla **antes de la primera tabla**: cambiar de estrategia después implica
 rehacer el historial.
 
-## Decisión propuesta
+## Decisión
 
 1. **Flyway** con migraciones versionadas en
    `backend/ms-backend/src/main/resources/db/migration/` (`V1__esquema_inicial.sql`, …).
 2. `spring.jpa.hibernate.ddl-auto: validate` en **todos** los entornos.
 3. El esquema se cambia **solo** con una migración nueva; nunca editando una migración ya aplicada.
+
+## Implementación (2026-11-27)
+
+- Dependencias `flyway-core` y `flyway-database-postgresql` en `ms-backend` (versiones gestionadas por el
+  BOM de Spring Boot).
+- `V1__esquema_inicial.sql` con las 25 tablas de `DB-SCHEMA.md` §2, los índices de §3.1–§3.2, los CHECKs de
+  §3.3–§3.5 y los índices de lectura de §3.7.
+- Verificado aplicando las migraciones sobre una base vacía.
 
 ## Alternativas consideradas
 
@@ -36,4 +45,4 @@ rehacer el historial.
 ## Referencias
 
 - `docs/DB-SCHEMA.md` §7.
-- `backend/ms-backend/Dockerfile`, `backend/ms-backend/pom.xml` (todavía inexistente).
+- `backend/ms-backend/pom.xml`, `backend/ms-backend/src/main/resources/db/migration/V1__esquema_inicial.sql`.
