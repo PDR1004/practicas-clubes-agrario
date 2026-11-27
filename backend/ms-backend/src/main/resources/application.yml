@@ -1,0 +1,8 @@
+server:
+  port: 9003
+  servlet:
+    context-path: /backend
+
+spring:
+  application:
+    name: ms-backend
