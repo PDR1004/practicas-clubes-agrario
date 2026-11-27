@@ -6,3 +6,15 @@ server:
 spring:
   application:
     name: ms-backend
+  profiles:
+    default: local
+  datasource:
+    # En Docker el Compose inyecta SPRING_DATASOURCE_* apuntando a postgres:5432.
+    # Los defaults son para correr desde el IDE contra el puerto publicado del host.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/clubes_db}
+    username: ${SPRING_DATASOURCE_USERNAME:clubes}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
