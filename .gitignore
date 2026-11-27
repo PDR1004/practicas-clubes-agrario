@@ -13,8 +13,8 @@ secrets/
 # Configuración local del agente (opencode.json contiene el token de Atlassian)
 .opencode/opencode.json
 
-# Cache derivado del índice de skills del agente (se regenera automáticamente)
-.atl/.skill-registry.cache.json
+# Artefactos locales del agente (índice de skills, caches): no se comparten
+.atl/
 
 # Dependencias y artefactos de compilación
 **/node_modules/
