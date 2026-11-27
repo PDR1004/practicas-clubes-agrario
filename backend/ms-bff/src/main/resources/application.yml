@@ -12,3 +12,9 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:https://clubes.local/auth/realms/clubes}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8080/auth/realms/clubes/protocol/openid-connect/certs}
+
+clients:
+  ms-backend:
+    url: ${MS_BACKEND_URL:http://localhost:9003/backend}
+  ms-conector:
+    url: ${MS_CONECTOR_URL:http://localhost:9004/conector}
