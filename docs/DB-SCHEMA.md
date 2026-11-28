@@ -69,7 +69,7 @@
 | Entidad | Tabla | Columnas | PK / Notas |
 |---|---|---|---|
 | Pago | `pago` | `id_pago`, `id_club`, `id_usuario_cobro`, `nro_recibo`, `fecha_pago`, `medio_pago`, `monto_total`, `estado`, `motivo_anulacion` | Único `(id_club, nro_recibo)` |
-| Cuota | `cuota` | `id_cuota`, `id_club`, `id_jugador`, `id_fichaje`, `id_valor_cuota`, `id_pago`, `periodo`, `fecha_vencimiento`, `monto_base`, `descuento_aplicado`, `estado` | Único `(id_fichaje, periodo)` |
+| Cuota | `cuota` | `id_cuota`, `id_club`, `id_jugador`, `id_fichaje`, `id_valor_cuota`, `id_pago`, `periodo` *(formato `YYYY-MM`)*, `fecha_vencimiento`, `monto_base`, `descuento_aplicado`, `estado` | Único `(id_fichaje, periodo)` |
 | Valor_Cuota | `valor_cuota` | `id_valor_cuota`, `id_club`, `precio`, `fecha_vigencia` | Tarifa versionada |
 | Estado_Cuota | `estado_cuota` | `id_estado_cuota`, `id_cuota`, `fecha_hora`, `valor_estado` | Bitácora append-only |
 
@@ -122,6 +122,11 @@ ALTER TABLE convocatoria_partido ADD CONSTRAINT uq_convocatoria_jugador UNIQUE (
 
 -- 6. Prevención de doble facturación
 ALTER TABLE cuota ADD CONSTRAINT uq_cuota_fichaje_periodo UNIQUE (id_fichaje, periodo);
+
+-- 7. El período de cuota es 'YYYY-MM' (ver §2.5); el CHECK evita valores no parseables
+ALTER TABLE cuota
+  ADD CONSTRAINT ck_cuota_periodo_formato
+  CHECK (periodo ~ '^[0-9]{4}-(0[1-9]|1[0-2])$');
 ```
 
 ### 3.2 Fuente única de verdad de la vigencia
@@ -308,6 +313,13 @@ Reglas:
 1. El esquema se cambia **solo** con una migración nueva (`V2__…`, `V3__…`); nunca editando una ya aplicada.
 2. `ddl-auto: validate` en todos los entornos: Hibernate valida, no crea.
 3. La primera migración, `V1__esquema_inicial.sql`, contiene el esquema completo de §2 y §3.
+
+Migraciones aplicadas:
+
+| Versión | Contenido |
+|---|---|
+| `V1__esquema_inicial.sql` | Las 25 tablas de §2 con sus PK, FK, UNIQUE y CHECKs |
+| `V2__cuota_periodo_formato.sql` | `ck_cuota_periodo_formato`: `cuota.periodo` solo acepta `YYYY-MM` con mes 01–12 |
 
 ## 8. Riesgos y pendientes
 
