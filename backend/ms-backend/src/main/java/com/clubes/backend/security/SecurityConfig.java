@@ -20,7 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            ObjectProvider<TenantContextFilter> tenantContextFilterProvider
+            ObjectProvider<TenantContextResolver> tenantContextResolverProvider
     ) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -33,9 +33,12 @@ public class SecurityConfig {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 );
 
-        TenantContextFilter tenantContextFilter = tenantContextFilterProvider.getIfAvailable();
-        if (tenantContextFilter != null) {
-            http.addFilterAfter(tenantContextFilter, BearerTokenAuthenticationFilter.class);
+        TenantContextResolver tenantContextResolver = tenantContextResolverProvider.getIfAvailable();
+        if (tenantContextResolver != null) {
+            http.addFilterAfter(
+                    new TenantContextFilter(tenantContextResolver),
+                    BearerTokenAuthenticationFilter.class
+            );
         }
 
         return http.build();

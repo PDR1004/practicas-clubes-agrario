@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @WebMvcTest(controllers = TenantContextFilterTest.TestTenantController.class)
 @Import({
     SecurityConfig.class,
-    TenantContextFilter.class,
     TenantContextResolver.class,
     TenantContextFilterTest.TestTenantController.class
 })

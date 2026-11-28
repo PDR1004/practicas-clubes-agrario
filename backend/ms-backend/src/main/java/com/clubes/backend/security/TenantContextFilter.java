@@ -10,14 +10,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Filtro que resuelve y expone el {@link TenantContext} por cada request autenticado con JWT,
  * limpiando el {@link TenantContextHolder} al finalizar.
  */
-@Component
 public class TenantContextFilter extends OncePerRequestFilter {
 
     private final TenantContextResolver tenantContextResolver;
