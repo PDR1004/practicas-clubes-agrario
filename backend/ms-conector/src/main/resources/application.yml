@@ -6,3 +6,13 @@ server:
 spring:
   application:
     name: ms-conector
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-components: always
+      show-details: never

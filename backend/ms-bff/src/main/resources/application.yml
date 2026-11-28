@@ -6,12 +6,30 @@ server:
 spring:
   application:
     name: ms-bff
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 2000
+            readTimeout: 2000
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:https://clubes.local/auth/realms/clubes}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8080/auth/realms/clubes/protocol/openid-connect/certs}
+
+management:
+  endpoints:
+    web:
+      base-path: /metrics
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-components: always
+      show-details: never
 
 clients:
   ms-backend:
