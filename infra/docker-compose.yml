@@ -114,7 +114,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.8.2
     container_name: keycloak-server
     environment:
       KC_HOSTNAME_STRICT: "false"

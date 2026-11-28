@@ -20,7 +20,7 @@ Servicios de apoyo: **pgAdmin** (`:5050`) y la base **`keycloak_db`** en la mism
 
 ## 2. Servicios y puertos
 
-Definidos en `infra/docker-compose.yml` (proyecto Compose: `nginx-docker`).
+Definidos en `infra/docker-compose.yml` (proyecto Compose: `clubes`).
 
 | Servicio Compose | Contenedor | Puerto host → interno | Notas |
 |---|---|---|---|
@@ -32,7 +32,13 @@ Definidos en `infra/docker-compose.yml` (proyecto Compose: `nginx-docker`).
 | `keycloak` | `keycloak-server` | `8080:8080` | `KC_HTTP_RELATIVE_PATH=auth` |
 | `pgadmin` | `pgadmin4_ui` | `5050:80` | UI de administración de la base |
 
-Red interna: `nginx-docker_default`. Volumen de datos: `nginx-docker_postgres_data`.
+Red interna: `clubes_default`. Volumen de datos: `clubes_postgres_data`.
+
+**Versiones de imagen.** Todas las imágenes están fijadas a una versión explícita (`postgres:16-alpine`,
+`nginx:1.27-alpine`, `node:22-alpine`, `keycloak:26.8.2`). Nunca se usa `:latest`: una actualización silenciosa
+cambia el comportamiento del stack sin que cambie una línea de código, y ese cambio aparece en una máquina y no
+en otra. Para actualizar una imagen se cambia el pin en un PR propio y se vuelve a verificar el stack completo
+(KAN-55).
 
 ## 3. Nginx (`infra/nginx/default.conf`)
 
