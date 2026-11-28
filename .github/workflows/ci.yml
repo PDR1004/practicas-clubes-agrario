@@ -21,6 +21,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
+      # KAN-50 (Agustin): corre los tests del frontend.
+      # ATENCION: KAN-36 (Ezequiel) tambien modifica este workflow. Al mergear, conservar el paso
+      # `npm test` y sumar los cambios de KAN-36, sin reemplazar este bloque.
+      - run: npm test
       - run: npm run build
 
   backend-test:
