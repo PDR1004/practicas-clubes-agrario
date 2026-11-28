@@ -41,6 +41,9 @@ generación de cuotas.
 
 - El login ocurre contra Keycloak desde el frontend con **Standard Flow + PKCE S256**; el cliente `clubes-fe` es
   público y no tiene secreto (§9.6).
+- El frontend **nunca renderiza un formulario de usuario/contraseña**: redirige a Keycloak y solo recibe el
+  `code`. El password grant (`directAccessGrantsEnabled`) está deshabilitado, así que la contraseña no pasa por
+  el código de la aplicación ni por su red.
 - El frontend envía `Authorization: Bearer <access_token>` en cada request a `/api`.
 - El **BFF y `ms-backend` validan el JWT de forma independiente** como OAuth2 Resource Servers
   (`spring.security.oauth2.resourceserver.jwt.issuer-uri`), verificando firma y emisor.
