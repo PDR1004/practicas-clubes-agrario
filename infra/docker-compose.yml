@@ -14,8 +14,10 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       # el frontend se sirve desde /opt/clubes/ dentro de la imagen (ver frontend/Dockerfile)
     depends_on:
-      - ms-bff
-      - keycloak
+      ms-bff:
+        condition: service_started
+      keycloak:
+        condition: service_started
     restart: unless-stopped
 
   ms-bff:
@@ -33,7 +35,16 @@ services:
       MS_BACKEND_URL: http://ms-backend:9003/backend
       MS_CONECTOR_URL: http://ms-conector:9002/conector
     depends_on:
-      - ms-backend
+      ms-backend:
+        condition: service_healthy
+      ms-conector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9001/bff/metrics/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
   ms-backend:
@@ -55,6 +66,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-clubes_db}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9003/backend/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
   ms-conector:
@@ -66,6 +83,12 @@ services:
     container_name: ms-conector
     ports:
       - "9004:9002"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9002/conector/actuator/health | grep -q UP"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
 
   postgres:
