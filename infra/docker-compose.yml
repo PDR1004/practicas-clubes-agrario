@@ -1,4 +1,4 @@
-name: nginx-docker
+name: clubes
 
 services:
   web:

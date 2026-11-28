@@ -189,8 +189,10 @@ docker compose down
 
 1. **Código de aplicación inexistente** — bloquea el `up --build` completo y el CI.
 2. [HECHO] **Roles del realm** — los 5 roles canónicos ya están definidos y sin placeholders en `infra/keycloak/clubes-realm.json`.
-3. **`directAccessGrantsEnabled: true`** en el cliente público `clubes-fe`: el informe especifica Standard Flow
-   con PKCE. Habilitar el password grant en un SPA es una decisión pendiente de cerrar.
+3. [HECHO] **`directAccessGrantsEnabled`** en `clubes-fe`: cerrado en `false`. El password grant (ROPC) queda
+   deshabilitado para que la contraseña nunca atraviese el frontend; el único camino de login es Standard Flow
+   con PKCE S256. Se habilitó además `bruteForceProtected` (5 intentos, espera incremental de 60 s hasta 15 min,
+   ventana de 12 h) porque sin password grant el realm seguía siendo atacable por el formulario de login.
 4. **Migraciones** sin definir (Flyway / Liquibase / `ddl-auto`); ver `DB-SCHEMA.md` §7.
 5. **JVM del host** sin el certificado (afecta solo a ejecución desde IDE, no a contenedores).
 6. **pgAdmin puede mostrar `clubes_db` y `keycloak_db`** con el usuario `clubes`; para administrar `keycloak_db`

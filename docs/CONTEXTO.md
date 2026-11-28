@@ -146,8 +146,9 @@ Resumidas acá; el razonamiento completo y las alternativas descartadas están e
 6. **BFF + microservicios + Nginx** como arquitectura de aplicación. → `adr/0006`
 7. **React + Vite** como stack del frontend. → `adr/0007`
 8. **Docker Compose con `keycloak_db` separada** de `clubes_db`. → `adr/0008`
-9. **Notificaciones de cumpleaños con CallMeBot** encapsuladas en `ms-conector`. → `adr/0010`
-10. **Ciclo de vida de temporada** con `fecha_cierre` y una única temporada activa por liga. → `adr/0011`
+9. **Migraciones con Flyway** en `ms-backend` y `ddl-auto: validate` en todos los entornos. → `adr/0009`
+10. **Notificaciones de cumpleaños con CallMeBot** encapsuladas en `ms-conector`. → `adr/0010`
+11. **Ciclo de vida de temporada** con `fecha_cierre` y una única temporada activa por liga. → `adr/0011`
 
 ## 8. Arquitectura (resumen)
 
